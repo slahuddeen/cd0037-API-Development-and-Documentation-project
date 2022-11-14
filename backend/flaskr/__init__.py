@@ -3,7 +3,6 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-import models
 
 from models import setup_db, Question, Category
 
@@ -16,11 +15,11 @@ def create_app(test_config=None):
     CORS(app)
 
     """
-    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+    @DONE: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
     """
 
     """
-    @TODO: Use the after_request decorator to set Access-Control-Allow
+    @DONE: Use the after_request decorator to set Access-Control-Allow
     """
 
     @app.after_request
@@ -30,23 +29,23 @@ def create_app(test_config=None):
         return response
 
     """
-    @TODO:
+    @DONE:
     Create an endpoint to handle GET requests
     for all available categories.
     """
 
-    @app.route('/', methods=['GET'])
+    @app.route('/categories', methods=['GET'])
     def get_category():
         categories = Category.query.all()
         page = request.args.get('page', 1, type=int)
         start = (page - 1) * 10
         end = start + 10
-        formatted_plants = [category.format() for category in categories]
+        formatted_categories = [category.format() for category in categories]
 
         return jsonify({
             'success': True,
-            'plants': formatted_plants[start:end],
-            'total_plants': len(formatted_plants)
+            'categories': formatted_categories[start:end],
+            'total_categories': len(formatted_categories)
         })
 
     """
@@ -61,6 +60,20 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
+
+    @app.route('/questions', methods=['GET'])
+    def get_questions():
+        questions = Question.query.all()
+        formatted_questions = [question.format() for question in questions]
+        page = request.args.get('page', 1, type=int)
+        start = (page - 1) * 10
+        end = start + 10
+        return jsonify({
+            'success': True,
+            "questions": formatted_questions[start:end],
+            "total_questions": len(formatted_questions),
+        }
+        )
 
     """
     @TODO:
