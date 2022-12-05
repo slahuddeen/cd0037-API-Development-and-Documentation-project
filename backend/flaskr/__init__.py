@@ -8,6 +8,16 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+def paginate_questions(request, selection):
+    page = request.args.get("page", 1, type=int)
+    start = (page - 1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+
+    questions = [question.format() for question in selection]
+    current_questions = questions[start:end]
+
+    return current_questions
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -83,6 +93,21 @@ def create_app(test_config=None):
     This removal will persist in the database and when you refresh the page.
     """
 
+    @app.route('/questions/<int:question_id>', methods=['DELETE'])
+    def delete_question(question_id):
+        selected_question = Question.query.get(question_id)
+        if selected_question is None:
+            abort(404)
+        selected_question.delete()
+        selection = Question.query.order_by(Question.id).all()
+        current_questions = paginate_questions(request, selection)
+
+        return jsonify({
+            'success': True,
+            "deleted": question_id,
+        })  
+
+
     """
     @TODO:
     Create an endpoint to POST a new question,
@@ -114,6 +139,26 @@ def create_app(test_config=None):
     category to be shown.
     """
 
+    @app.route('/categories/<int:category_id>/questions', methods=['GET'])
+    def get_individual_question_by_category(category_id):
+        try:
+            selected_category = Category.query.get(category_id)
+            if selected_category is None:
+                abort(404)
+            else:
+                selection = Question.query.filter_by(
+                    category=selected_category.id).order_by(Question.id).all()
+                current_questions = paginate_questions(request, selection)
+                return jsonify({
+                    "success": True,
+                    "questions": current_questions,
+                    "current_category": selected_category.type,
+                    "total_questions": len(selection)
+                })
+
+        except:
+            abort(422)
+
     """
     @TODO:
     Create a POST endpoint to get questions to play the quiz.
@@ -126,11 +171,48 @@ def create_app(test_config=None):
     and shown whether they were correct or not.
     """
 
+
+
+
+
+
+
     """
     @TODO:
     Create error handlers for all expected errors
     including 404 and 422.
     """
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            'success': False,
+            'error': 404,
+            'message': 'Not found!'
+        })
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({
+            'success': False,
+            'error': 405,
+            'message': 'Thats Not Allowed!'
+        })
+
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            'success': False,
+            'error': 422,
+            'message': 'Thats not processable!'
+        })
+
+    @app.errorhandler(500)
+    def internal_server(error):
+        return jsonify({
+            'success': False,
+            'error': 500,
+            'message': 'Internal server error!'
+        })
 
     return app
 
