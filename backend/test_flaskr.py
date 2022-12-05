@@ -77,6 +77,19 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(body['error'], 404)
         self.assertEqual(body['message'], 'Not found!')
 
+    def test_create_individual_question(self):
+        test_question = {
+            "question": "What is life?",
+            "answer": "24.",
+            "category": "1",
+            "difficulty": "1"
+
+        }
+        response = self.client().post('/questions', json=test_question)
+        body = json.loads(response.data)
+        self.assertEqual(body['success'], True)
+        self.assertTrue(body['created'])
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
