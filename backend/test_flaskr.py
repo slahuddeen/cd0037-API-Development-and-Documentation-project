@@ -10,6 +10,10 @@ from flaskr import create_app
 from models import setup_db, Question, Category
 from urllib import response
 
+from pathlib import Path
+from dotenv import load_dotenv
+
+
 class TriviaTestCase(unittest.TestCase):
     """This class represents the trivia test case"""
 
@@ -17,8 +21,10 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
+        env_path = Path('.')/'.env'
+        load_dotenv('.env')
         self.database_name = "trivia"
-        self.database_path = 'postgresql://{}:{}@{}/{}'.format('postgres','abc','localhost:5432', self.database_name)
+        self.database_path = 'postgresql://{}:{}@{}/{}'.format(os.getenv("USER"),os.getenv("PASSWORD"),'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
