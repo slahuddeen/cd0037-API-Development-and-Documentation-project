@@ -42,7 +42,19 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+    def test_get_individual_question_by_category(self):
+        response = self.client().get('/categories/1/questions')
+        body = json.loads(response.data)
+        self.assertEqual(body['success'], True)
+        self.assertTrue(body['questions'])
 
+    def test_not_found(self):
+        response = self.client().get('/question')
+        body = json.loads(response.data)
+
+        self.assertEqual(body['error'], 404)
+        self.assertEqual(body['success'], False)
+        self.assertEqual(body['message'], 'Not found!')
 
     def test_get_all_categories(self):
         response = self.client().get('/categories')
@@ -95,6 +107,7 @@ class TriviaTestCase(unittest.TestCase):
         body = json.loads(response.data)
         self.assertEqual(body['success'], True)
         self.assertTrue(body['created'])
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
