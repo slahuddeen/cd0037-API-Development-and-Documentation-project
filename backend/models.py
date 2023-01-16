@@ -9,7 +9,7 @@ env_path = Path('.')/'.env'
 load_dotenv('.env')
 
 database_name = 'trivia'
-database_path = 'postgresql://{}:{}@{}/{}'.format(os.getenv("USER"),os.getenv("PASSWORD"),'localhost:5432', database_name)
+database_path = 'postgresql://{}:{}@{}/{}'.format(os.environ.get('USER'),os.environ.get('PASSWORD'),'localhost:5432', database_name)
 
 db = SQLAlchemy()
 
