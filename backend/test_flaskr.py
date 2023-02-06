@@ -101,12 +101,6 @@ class TriviaTestCase(unittest.TestCase):
         body = json.loads(response.data)
         self.assertEqual(body['success'], True)
 
-    def test_delete_individual_question(self):
-        response = self.client().delete('/questions/10')
-        body = json.loads(response.data)
-        self.assertEqual(body['success'], True)
-        self.assertEqual(body['deleted'], 10)
-
     def test_search_questions(self):
         search = {
             "searchTerm": "clay"
@@ -114,6 +108,28 @@ class TriviaTestCase(unittest.TestCase):
         response = self.client().post('/questions/search', json=search)
         body = json.loads(response.data)
         self.assertEqual(body['success'], True)
+
+    def test_delete_individual_question(self):
+        id = Question.query.first().id
+        response = self.client().delete("/questions/" + str(id))
+        body = json.loads(response.data)
+
+        self.assertEqual(body['success'], True)
+        self.assertEqual(body['deleted'], id)
+
+
+    def test_get_next_question(self):
+        json_request = {
+            'previous_questions': [2], 
+            'quiz_category': {'id': 2, 'category': 'Art'}
+        }
+
+        res = self.client().post('/quizes', json=json_request)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['question'])
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
