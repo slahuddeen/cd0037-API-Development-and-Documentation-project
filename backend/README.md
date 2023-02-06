@@ -89,6 +89,107 @@ You will need to provide detailed documentation of your API endpoints including 
   "6": "Sports"
 }
 ```
+---
+
+`GET '/questions'`
+
+- Retrieves all the questions.
+- Request Arguments: None
+- Returns: An object with all the questions
+
+```json
+{
+  "success": True,
+  "questions": list,
+  "total_questions": list,
+  "current_category": "Science"
+}
+```
+
+---
+
+`DELETE '/questions/<int:question_id>'`
+
+- Deletes one question.
+- Request Arguments: question_id
+- Returns: An object with a success status and the      deleted question id
+
+```json
+{
+  "question": [
+    {
+      "id": 1,
+    },
+
+  "success": True,
+  "deleted": 1
+}
+```
+---
+
+`POST '/questions'`
+- posts a question to the database
+- Request Arguments: 
+
+```json
+{
+  "question": [
+    {
+      "category": 1,
+      "question": "whats 2+2",
+      "answer": "4",
+      "difficulty": 1,
+    },
+}
+```
+
+`POST '/questions/search'`
+- searches for a question in the database
+- Request Arguments: 
+
+```json
+{
+  "searchTerm": "a question",
+
+}
+```
+- returns:
+
+```json
+{
+  "question": [
+    {
+      "id": 1,
+      "category": 1,
+      "question": "whats 2+2",
+      "answer": "4",
+      "difficulty": 1,
+    },
+}
+```
+
+`POST '/quizes'`
+- gets the questions for the quiz game
+- Request Arguments: 
+
+```json
+{
+    'previous_questions': [1, 4, 20, 15]
+    'quiz_category': {'id': 1, 'category': 'Science'}
+ }
+```
+
+```json
+{
+  "question": {
+    "id": 1,
+    "question": "whats 2+2",
+    "answer": "4",
+    "difficulty": 1,
+    "category": 1
+  }
+}
+```
 
 ## Testing
 

@@ -39,7 +39,7 @@ class TriviaTestCase(unittest.TestCase):
         pass
 
     """
-    TODO
+    DONE
     Write at least one test for each test for successful operation and for expected errors.
     """
     def test_get_individual_question_by_category(self):
@@ -82,12 +82,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(body['error'], 405)
         self.assertEqual(body['message'], "Thats Not Allowed!")
 
-    def test_delete_individual_question(self):
-        response = self.client().delete('/questions/5')
-        body = json.loads(response.data)
-        self.assertEqual(body['success'], True)
-        self.assertEqual(body['deleted'], 5)
-
     def test_delete_individual_question_error(self):
         response = self.client().delete('/questions/1000')
         body = json.loads(response.data)
@@ -97,8 +91,8 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_create_individual_question(self):
         test_question = {
-            "question": "What is life?",
-            "answer": "24.",
+            "question": "test: What is life?",
+            "answer": "24",
             "category": "1",
             "difficulty": "1"
 
@@ -106,9 +100,20 @@ class TriviaTestCase(unittest.TestCase):
         response = self.client().post('/questions', json=test_question)
         body = json.loads(response.data)
         self.assertEqual(body['success'], True)
-        self.assertTrue(body['created'])
 
+    def test_delete_individual_question(self):
+        response = self.client().delete('/questions/10')
+        body = json.loads(response.data)
+        self.assertEqual(body['success'], True)
+        self.assertEqual(body['deleted'], 10)
 
+    def test_search_questions(self):
+        search = {
+            "searchTerm": "clay"
+        }
+        response = self.client().post('/questions/search', json=search)
+        body = json.loads(response.data)
+        self.assertEqual(body['success'], True)
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()

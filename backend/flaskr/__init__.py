@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy import desc
 import random
 
 from models import setup_db, Question, Category
@@ -47,16 +48,22 @@ def create_app(test_config=None):
     @app.route('/categories', methods=['GET'])
     def get_category():
         try:
-
             categories = Category.query.all()
             page = request.args.get('page', 1, type=int)
             start = (page - 1) * 10
             end = start + 10
             formatted_categories = [category.format() for category in categories]
 
+            category_list = {}
+            for cat in categories:
+                category_list[cat.id] = cat.type
+
+            if len(categories) == 0:
+                abort(404)
+
             return jsonify({
                 'success': True,
-                'categories': formatted_categories[start:end],
+                'categories': category_list,
                 'total_categories': len(formatted_categories)
             })
         except:
@@ -143,12 +150,12 @@ def create_app(test_config=None):
         new_question = Question(question=added_question, answer=added_answer, category=added_category, difficulty=added_difficulty)
         new_question.insert()
 
-        selection = Question.query.order_by(Question.id).all()
-        current_question = paginate_questions(request, selection)
+        selection = Question.query.order_by(desc(Question.id)).first()
+        #current_question = paginate_questions(request, selection)
         
-        return jsonify({"question":current_question})
+        return jsonify({'success': True,})
     """
-    @TODO:
+    @DONE:
     Create a POST endpoint to get questions based on a search term.
     It should return any questions for whom the search term
     is a substring of the question.
@@ -166,7 +173,7 @@ def create_app(test_config=None):
             if searchTerm:
                 search = "%{}%".format(searchTerm)
                 questions = Question.query.filter(
-                    Question.question.like(search)).all()
+                    Question.question.ilike(search)).all()
                 current_questions = [question.format()
                                      for question in questions]
 
