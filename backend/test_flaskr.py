@@ -109,6 +109,41 @@ class TriviaTestCase(unittest.TestCase):
         body = json.loads(response.data)
         self.assertEqual(body['success'], True)
 
+    def test_search_questions_failure(self):
+        search = {
+            "searchTerm": "imnotreal"
+        }
+        response = self.client().post('/questions/search', json=search)
+        body = json.loads(response.data)
+        self.assertEqual(body['success'], True)
+        self.assertEqual(body['total_questions'], 0)
+    
+    def test_create_individual_question_failure(self):
+        test_question = {
+            "question": "test:this should not work",
+            "answer": 24,
+            "category": 0,
+            "difficulty": "1"
+
+        }
+        res = self.client().post('/questions/9', json=test_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(data['error'], 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], "Thats Not Allowed!")
+    
+    def test_get_next_question_failure(self):
+        json_request = {
+            'previous_questions': [2], 
+            'quiz_category': {'id': 2, 'category': 'Art'}
+        }
+        res = self.client().post('/quizes', json=json_request)
+        data = json.loads(res.data)
+
+        self.assertEqual(data['error'], 422)
+        self.assertEqual(data['success'], False)
+
     def test_delete_individual_question(self):
         id = Question.query.first().id
         response = self.client().delete("/questions/" + str(id))
@@ -121,7 +156,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_get_next_question(self):
         json_request = {
             'previous_questions': [2], 
-            'quiz_category': {'id': 2, 'category': 'Art'}
+            'quiz_category': {'id': 1, 'category': 'Science'}
         }
 
         res = self.client().post('/quizes', json=json_request)

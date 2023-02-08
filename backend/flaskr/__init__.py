@@ -229,6 +229,8 @@ def create_app(test_config=None):
     @app.route('/quizes', methods=['POST'])
     def get_individual_question_by_quizes():
         body = request.get_json()
+        if body is None:
+            abort(400)
         quiz_category = body['quiz_category']
         previous_questions = body['previous_questions']
 
